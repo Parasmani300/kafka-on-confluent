@@ -1,7 +1,10 @@
 package com.example.kafkaonconfluent.config;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.BytesSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -22,19 +25,42 @@ import java.util.Map;
 @EnableKafka
 public abstract class RootConfig {
 
-    @Value("${bootstrap.servers}")
+    @Value("${spring.kafka.properties.bootstrap.servers}")
     String bootStrapServer;
 
 
     @Bean
     public ProducerFactory<String,Object> producerFactory()
     {
+        String topic = "sample-topic";
+        String sasl_username = "Mani";
+        String sasl_password = "12345678";
+        String truststore_location = "C:\\pass\\kafka.truststore.jks";
+        String truststore_password = "mk5od0WM";
+        String keystore_location = "C:\\pass\\kafka.keystore.jks";
+        String keystore_password = "mk5od0WM";
+
+        String jaasTemplate = "org.apache.kafka.common.security.plain.PlainLoginModule   required username='QGW3TV47IPDQKKHY'   password='nvjo7LiGulN131E7to6ZsC4YJep4X9jlevfiMOKbt+6+bpyORGWo//lqeCjG2RqX';";
+        String jaasConfig = jaasTemplate;
+
         System.out.println("Hello world");
         System.out.println(bootStrapServer);
         Map<String,Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,bootStrapServer);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+        props.put(SaslConfigs.SASL_JAAS_CONFIG, jaasConfig);
+
+//        props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, truststore_location);
+//        props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, truststore_password);
+//        props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, keystore_location);
+//        props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, keystore_password);
+
+        props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 30 * 1000);
+        props.put(ProducerConfig.RETRIES_CONFIG, 5);
+        props.put(ProducerConfig.RECONNECT_BACKOFF_MS_CONFIG, 3000);
 
         return new DefaultKafkaProducerFactory<>(props);
     }

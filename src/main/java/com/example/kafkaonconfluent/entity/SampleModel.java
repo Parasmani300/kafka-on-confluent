@@ -1,14 +1,5 @@
 package com.example.kafkaonconfluent.entity;
 
-import com.sun.xml.internal.ws.developer.Serialization;
-import org.springframework.core.serializer.Serializer;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-
-
 public class SampleModel{
 
     int a;
